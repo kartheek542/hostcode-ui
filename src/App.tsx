@@ -11,7 +11,7 @@ function App() {
             setClicked(false);
             setBackendMessage("");
         } else {
-            const response = await apiClient.get("/api/hello");
+            const response = await apiClient.get("hello");
             if (response.status === 200) {
                 setBackendMessage(response.data.message);
             } else {
