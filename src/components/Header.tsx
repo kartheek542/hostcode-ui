@@ -1,5 +1,6 @@
 import { useState } from "react";
-import { FaBars, FaTimes } from "react-icons/fa"; // Hamburger and close icons
+import { FaBars, FaTimes } from "react-icons/fa";
+import { Link } from "react-router-dom";
 
 interface Tab {
     label: string;
@@ -8,24 +9,25 @@ interface Tab {
 
 const Header = () => {
     const [isOpen, setIsOpen] = useState(false);
+    const [isLoggedIn, setIsLoggedIn] = useState(false);
 
     const toggleMenu = () => {
         console.log("toggling menu");
         setIsOpen((prevState) => !prevState);
     };
 
+    const handleUserSession = () => {
+        setIsLoggedIn((prevState) => !prevState);
+    };
+
     const tabs: Array<Tab> = [
         {
             label: "Contests",
-            url: "#",
+            url: "/contests",
         },
         {
             label: "Gym",
-            url: "#",
-        },
-        {
-            label: "Login",
-            url: "#",
+            url: "/gym",
         },
     ];
 
@@ -33,7 +35,14 @@ const Header = () => {
         <header className="bg-gray-800 text-white flex justify-center">
             <div className="flex w-full max-w-7xl">
                 <div className="flex-grow px-2 py-2">
-                    <h1 className="text-xl font-bold">hostcode</h1>
+                    <h1 className="text-xl font-mono">
+                        <Link to="/">
+                            HOST
+                            <span className="text-blue-600 font-bold">
+                                CODE
+                            </span>
+                        </Link>
+                    </h1>
                 </div>
                 <div className="px-2 py-2 flex flex-col justify-center md:hidden">
                     <button onClick={toggleMenu}>
@@ -43,10 +52,20 @@ const Header = () => {
                 <div className="hidden md:flex">
                     <nav className="flex items-center h-full">
                         {tabs.map((eachTab, id) => (
-                            <a key={id} href={eachTab.url} className="px-2 py-2 hover:bg-gray-700 rounded-md">
+                            <Link
+                                key={id}
+                                to={eachTab.url}
+                                className="px-2 py-2 hover:bg-gray-700 rounded-md"
+                            >
                                 {eachTab.label}
-                            </a>
+                            </Link>
                         ))}
+                        <button
+                            className="px-2 py-2 hover:bg-gray-700 rounded-md"
+                            onClick={handleUserSession}
+                        >
+                            {isLoggedIn ? "Logout" : "Login"}
+                        </button>
                     </nav>
                 </div>
             </div>
@@ -60,21 +79,30 @@ const Header = () => {
                     onClick={toggleMenu}
                 ></div>
                 <div
-                    className={`absolute right-0 top-0 h-full bg-gray-600 w-64 transform transition-transform duration-300 ease-in-out ${
+                    className={`absolute right-0 top-0 h-full bg-gray-600 w-54 transform transition-transform duration-300 ease-in-out ${
                         isOpen ? "translate-x-0" : "translate-x-full"
                     }`}
                 >
                     <div className="flex justify-end items-center">
-                        <button className="px-2 py-2" onClick={toggleMenu}>
+                        <button
+                            className="text-xl px-2 py-2"
+                            onClick={toggleMenu}
+                        >
                             <FaTimes />
                         </button>
                     </div>
-                    <nav className="flex flex-col px-2 space-y-6">
+                    <nav className="flex flex-col px-2 items-center">
                         {tabs.map((eachTab, id) => (
-                            <a key={id} href={eachTab.url}>
+                            <Link key={id} to={eachTab.url} className="pt-6">
                                 {eachTab.label}
-                            </a>
+                            </Link>
                         ))}
+                        <button
+                            className="text-left pt-6"
+                            onClick={handleUserSession}
+                        >
+                            {isLoggedIn ? "Logout" : "Login"}
+                        </button>
                     </nav>
                 </div>
             </div>
@@ -83,5 +111,3 @@ const Header = () => {
 };
 
 export default Header;
-
-// `fixed top-0 right-0 h-full w-64 bg-gray-800 transform ${ isOpen ? "translate-x-0" : "translate-x-full" } transition-transform duration-300 ease-in-out md:hidden z-50`

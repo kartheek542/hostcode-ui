@@ -10,7 +10,7 @@ const getButtonClassNames = (
         return `bg-blue-500 ${generalFormat} ${extras}`;
     } else if (type === "clear") {
         return `bg-red-600 ${generalFormat} ${extras}`;
-    } else if(type === "success") {
+    } else if (type === "success") {
         return `bg-green-600 ${generalFormat} ${extras}`;
     }
     return generalFormat;
