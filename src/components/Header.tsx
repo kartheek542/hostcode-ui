@@ -1,6 +1,9 @@
 import { useState } from "react";
 import { FaBars, FaTimes } from "react-icons/fa";
-import { Link } from "react-router-dom";
+import { useDispatch, useSelector } from "react-redux";
+import { Link, useNavigate } from "react-router-dom";
+import { getUserLoginStatus } from "../state/selectors";
+import { removeToken } from "../state/authSlice";
 
 interface Tab {
     label: string;
@@ -9,15 +12,27 @@ interface Tab {
 
 const Header = () => {
     const [isOpen, setIsOpen] = useState(false);
-    const [isLoggedIn, setIsLoggedIn] = useState(false);
+    const isLoggedIn = useSelector(getUserLoginStatus);
+    const dispatch = useDispatch();
+    const navigate = useNavigate();
 
     const toggleMenu = () => {
         console.log("toggling menu");
         setIsOpen((prevState) => !prevState);
     };
 
+    const removeUserSessionCookie = () => {
+        console.log("removing cookie");
+    };
+
     const handleUserSession = () => {
-        setIsLoggedIn((prevState) => !prevState);
+        if (isLoggedIn) {
+            removeUserSessionCookie();
+            dispatch(removeToken());
+        } else {
+            navigate("/login");
+        }
+        setIsOpen(false);
     };
 
     const tabs: Array<Tab> = [
