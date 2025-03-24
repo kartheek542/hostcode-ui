@@ -60,9 +60,9 @@ function Login() {
             {/* login container */}
             <div className="rounded-md shadow-xl p-5 mb-30 w-8/10 max-w-md">
                 {/* header container */}
-                <div className="flex justify-center mb-3">
+                <div className="flex mb-5">
                     <h1 className="text-2xl font-bold">
-                        Welcome back, Plz login
+                        Welcome back,<br/>Login to HOSTCODE
                     </h1>
                 </div>
                 {/* Username container */}
