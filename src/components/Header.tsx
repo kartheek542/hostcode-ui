@@ -50,8 +50,8 @@ const Header = () => {
         <header className="bg-gray-800 text-white flex justify-center">
             <div className="flex w-full max-w-7xl">
                 <div className="flex-grow px-2 py-2">
-                    <h1 className="text-xl font-mono">
-                        <Link to="/">
+                    <h1 className="text-xl font-mono ">
+                        <Link to="/" className="">
                             HOST
                             <span className="text-blue-600 font-bold">
                                 CODE
@@ -108,7 +108,7 @@ const Header = () => {
                     </div>
                     <nav className="flex flex-col px-2 items-center">
                         {tabs.map((eachTab, id) => (
-                            <Link key={id} to={eachTab.url} className="pt-6">
+                            <Link key={id} to={eachTab.url} className="pt-6" onClick={() => setIsOpen(false)}>
                                 {eachTab.label}
                             </Link>
                         ))}
