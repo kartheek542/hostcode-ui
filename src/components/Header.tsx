@@ -29,9 +29,8 @@ const Header = () => {
         if (isLoggedIn) {
             removeUserSessionCookie();
             dispatch(removeToken());
-        } else {
-            navigate("/login");
         }
+        navigate("/login");
         setIsOpen(false);
     };
 
@@ -108,7 +107,12 @@ const Header = () => {
                     </div>
                     <nav className="flex flex-col px-2 items-center">
                         {tabs.map((eachTab, id) => (
-                            <Link key={id} to={eachTab.url} className="pt-6" onClick={() => setIsOpen(false)}>
+                            <Link
+                                key={id}
+                                to={eachTab.url}
+                                className="pt-6"
+                                onClick={() => setIsOpen(false)}
+                            >
                                 {eachTab.label}
                             </Link>
                         ))}

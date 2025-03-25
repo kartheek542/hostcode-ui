@@ -1,7 +1,12 @@
 import { SetStateAction, useState } from "react";
 import { FaCircleUser, FaLock, FaRegEye, FaRegEyeSlash } from "react-icons/fa6";
 import { FcGoogle } from "react-icons/fc";
-import { Link } from "react-router-dom";
+import { Link, useNavigate } from "react-router-dom";
+import apiClient from "../API/apiClient";
+import Cookies from "js-cookie";
+import { useDispatch } from "react-redux";
+import { setToken } from "../state/authSlice";
+import { AxiosError } from "axios";
 
 function Login() {
     const [username, setUsername] = useState("");
@@ -9,8 +14,13 @@ function Login() {
 
     const [usernameError, setUsernameError] = useState(false);
     const [passwordError, setPasswordError] = useState(false);
+    const [loginErrorMessage, setLoginErrorMessage] = useState("");
 
     const [showPassword, setShowPassword] = useState(false);
+    const [isLoginProcessing, setIsLoginProcessing] = useState(false);
+
+    const navigate = useNavigate();
+    const dispatch = useDispatch();
 
     const validateUsername = (value: SetStateAction<string>) => {
         if (value === "") {
@@ -46,11 +56,53 @@ function Login() {
         validatePassword(e.target.value);
     };
 
-    const handleLogin = () => {
-        if (!validateUsername(username) && validatePassword(password)) {
+    const processLogin = async () => {
+        try {
+            const response = await apiClient.post("/user/login", {
+                euname: username,
+                password,
+            });
+            const { hostcodeAccessToken } = response.data;
+            return {
+                hostcodeAccessToken,
+                status: true,
+            };
+        } catch (error: unknown) {
+            if (error instanceof AxiosError) {
+                // eslint-disable-next-line no-unsafe-optional-chaining
+                const { message } = error.response?.data;
+                return {
+                    message,
+                    status: false,
+                };
+            }
+            return {
+                message: "Unknown Error, Please try again after sometime",
+                status: false,
+            };
+        }
+    };
+
+    const handleLogin = async () => {
+        console.log("Processing login");
+        if (validateUsername(username) || validatePassword(password)) {
+            console.log("Inside if");
             return;
         }
+        console.log("after if");
+        setIsLoginProcessing(true);
         // call api to backend
+        const loginStatus = await processLogin();
+        const { status, hostcodeAccessToken } = loginStatus;
+        if (status) {
+            // set cookie
+            Cookies.set("HOSTCODE_ACCESS_TOKEN", hostcodeAccessToken);
+            dispatch(setToken());
+            navigate("/contests");
+        } else {
+            setIsLoginProcessing(false);
+            setLoginErrorMessage(loginStatus.message);
+        }
     };
 
     console.log("rendering");
@@ -62,7 +114,9 @@ function Login() {
                 {/* header container */}
                 <div className="flex mb-5">
                     <h1 className="text-2xl font-bold">
-                        Welcome back,<br/>Login to HOSTCODE
+                        Welcome back,
+                        <br />
+                        Login to HOSTCODE
                     </h1>
                 </div>
                 {/* Username container */}
@@ -117,12 +171,18 @@ function Login() {
                 </div>
                 {/* login button container */}
                 <div className="mb-3">
-                    <button
-                        onClick={handleLogin}
-                        className="w-full bg-blue-500 py-2 rounded-md text-white hover:bg-blue-600 hover:cursor-pointer"
-                    >
-                        Login
-                    </button>
+                    <div>
+                        <button
+                            onClick={handleLogin}
+                            disabled={isLoginProcessing}
+                            className={`w-full bg-blue-500 py-2 rounded-md text-white hover:bg-blue-600 ${isLoginProcessing ? "cursor-not-allowed hover:bg-gray-300 bg-gray-300 text-gray-500" : "cursor-pointer"}`}
+                        >
+                            Login
+                        </button>
+                    </div>
+                    <p className="text-xs text-red-600 text-center ml-3">
+                        {loginErrorMessage}
+                    </p>
                 </div>
                 <div className="mb-3 flex items-center justify-around text-gray-300 text-sm">
                     <div className="w-2/5">
