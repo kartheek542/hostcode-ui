@@ -17,6 +17,7 @@ const authSlice = createSlice({
         },
         removeToken: (state) => {
             state.isUserLoggedIn = false;
+            Cookies.remove("HOSTCODE_ACCESS_TOKEN")
         },
     },
 });

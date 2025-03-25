@@ -1,12 +1,13 @@
 import { SetStateAction, useState } from "react";
 import { FaCircleUser, FaLock, FaRegEye, FaRegEyeSlash } from "react-icons/fa6";
 import { FcGoogle } from "react-icons/fc";
-import { Link, useNavigate } from "react-router-dom";
+import { Link, Navigate, useNavigate } from "react-router-dom";
 import apiClient from "../API/apiClient";
 import Cookies from "js-cookie";
-import { useDispatch } from "react-redux";
+import { useDispatch, useSelector } from "react-redux";
 import { setToken } from "../state/authSlice";
 import { AxiosError } from "axios";
+import { getUserLoginStatus } from "../state/selectors";
 
 function Login() {
     const [username, setUsername] = useState("");
@@ -106,8 +107,8 @@ function Login() {
     };
 
     console.log("rendering");
-
-    return (
+    const isLoggedIn = useSelector(getUserLoginStatus);
+    return isLoggedIn ? (<Navigate replace to="/contests" />) : (
         <div className="h-full flex flex-col justify-center w-full max-w-2xl items-center">
             {/* login container */}
             <div className="rounded-md shadow-xl p-5 mb-30 w-8/10 max-w-md">

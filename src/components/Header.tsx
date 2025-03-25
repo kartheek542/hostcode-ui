@@ -29,8 +29,10 @@ const Header = () => {
         if (isLoggedIn) {
             removeUserSessionCookie();
             dispatch(removeToken());
+            navigate("/contests");
+        } else {
+            navigate("/login");
         }
-        navigate("/login");
         setIsOpen(false);
     };
 
