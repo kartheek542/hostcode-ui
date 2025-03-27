@@ -25,7 +25,7 @@ function Gym() {
             };
             const response = await apiClient.get(
                 `/problems?pageNum=${currentPage}&pageSize=${problemsPerPage}`,
-                config
+                config,
             );
             console.log(response);
             setProblems(response.data.problems);

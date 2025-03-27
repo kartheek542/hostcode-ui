@@ -30,7 +30,7 @@ function Problem() {
             const config = { timeout: 60000 };
             const response = await apiClient.get(
                 `/problems/${problemId}`,
-                config
+                config,
             );
             console.log(response);
             setProblemDetails(response.data.problem);
@@ -40,7 +40,7 @@ function Problem() {
             setLoading(false);
             if (error instanceof AxiosError) {
                 setError(
-                    error.response?.data.message || "Error fetching problem"
+                    error.response?.data.message || "Error fetching problem",
                 );
             } else {
                 setError("Unknown error, please try again later.");

@@ -108,7 +108,9 @@ function Login() {
 
     console.log("rendering");
     const isLoggedIn = useSelector(getUserLoginStatus);
-    return isLoggedIn ? (<Navigate replace to="/contests" />) : (
+    return isLoggedIn ? (
+        <Navigate replace to="/contests" />
+    ) : (
         <div className="h-full flex flex-col justify-center w-full max-w-2xl items-center">
             {/* login container */}
             <div className="rounded-md shadow-xl p-5 mb-30 w-8/10 max-w-md">
