@@ -9,6 +9,7 @@ import Contests from "./pages/Contests";
 import ContestDetail from "./pages/ContestDetail";
 import Problem from "./pages/Problem";
 import Gym from "./pages/Gym";
+import MySubmission from "./pages/MySubmission";
 
 function App() {
     return (
@@ -39,6 +40,14 @@ function App() {
                                 <Route
                                     path="/problems/:problemId"
                                     element={<Problem />}
+                                />
+                                <Route
+                                    path="/constests/:contestId/:problemId"
+                                    element={<Problem />}
+                                />
+                                <Route
+                                    path="/contest/:contestId/submissions"
+                                    element={<MySubmission />}
                                 />
                             </Routes>
                         </div>
