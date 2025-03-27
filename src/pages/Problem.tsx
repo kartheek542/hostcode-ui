@@ -1,28 +1,91 @@
 import { AxiosError } from "axios";
 import { useEffect, useState } from "react";
-import { useParams } from "react-router-dom";
+import { useNavigate, useParams } from "react-router-dom";
 import apiClient from "../API/apiClient";
 import Editor from "@monaco-editor/react"; // Monaco Editor (used by VS Code)
+import { MathJaxFormat } from "../components/custom_components/MathJaxFormat";
+import { FaPaperPlane } from "react-icons/fa";
+import Cookies from "js-cookie";
 
 interface IProblemDetails {
     pid: number;
     name: string;
     description: string;
     constraints: string;
-    input: string;
-    output: string;
+    sample_input: string;
+    sample_output: string;
     contest_id: number;
     explanation: string;
     score: number;
+    input_format: string;
+    output_format: string;
 }
 
+interface ILanguages {
+    lid: number;
+    language: string;
+}
+
+const languageMap: { [key: string]: string } = {
+    "jdk-17": "java",
+    "python-3.9": "python",
+    "cpp-17": "cpp",
+    javascript: "javascript",
+};
+
 function Problem() {
-    const { problemId } = useParams();
+    const { problemId, contestId } = useParams();
     const [problemDetails, setProblemDetails] =
         useState<IProblemDetails | null>(null);
+    const navigate = useNavigate();
     const [loading, setLoading] = useState(true);
     const [error, setError] = useState<string | null>(null);
     const [code, setCode] = useState("// Write your code here...");
+    const [languages, setLanguages] = useState<ILanguages[]>([]);
+    const [selectedLanguage, setSelectedLanguage] = useState("javascript");
+
+    const findLanguageId = (langName: string): number => {
+        const lang = languages.find((l) => l.language === langName);
+        return lang ? lang.lid : -1; // Return the ID if found, else null
+    };
+
+    console.log("selectedLanguage", selectedLanguage);
+
+    const submiteTheCode = async (code: string, selectedLanguage: string) => {
+        try {
+            console.log("submitting code..");
+            const token = Cookies.get("HOSTCODE_ACCESS_TOKEN");
+            const config = {
+                timeout: 60000,
+                headers: {
+                    Authorization: `Bearer ${token}`,
+                },
+            };
+            const requestBody = {
+                problemId,
+                languageId: findLanguageId(selectedLanguage),
+                code,
+            };
+            const response = await apiClient.post(
+                "/problems/submit",
+                requestBody,
+                config
+            );
+            if (response.status == 200) {
+                navigate(`/contest/${contestId}/submissions`);
+            }
+        } catch (error: unknown) {
+            console.log(error);
+            setLoading(false);
+            if (error instanceof AxiosError) {
+                setError(
+                    error.response?.data.message || "Error fetching problem"
+                );
+            } else {
+                setError("Unknown error, please try again later.");
+            }
+        }
+    };
 
     const getProblemDetails = async () => {
         try {
@@ -34,6 +97,10 @@ function Problem() {
             );
             console.log(response);
             setProblemDetails(response.data.problem);
+            const langResponse = await apiClient.get("/problems/languages");
+            console.log("langResponse", langResponse);
+            setLanguages(langResponse.data.languages);
+            setSelectedLanguage(langResponse.data.languages[0].language);
             setLoading(false);
         } catch (error: unknown) {
             console.log(error);
@@ -62,6 +129,7 @@ function Problem() {
         return (
             <div className="text-center text-red-500 text-lg mt-6">{error}</div>
         );
+    // console.log("languages", languages);
 
     return (
         <div className="flex h-screen w-full">
@@ -71,7 +139,12 @@ function Problem() {
                     {problemDetails?.name}
                 </h1>
                 <p className="text-gray-700 text-lg mb-4">
-                    {problemDetails?.description}
+                    <MathJaxFormat
+                        statement={(problemDetails?.description || "").replace(
+                            /\\\\/g,
+                            "\\"
+                        )}
+                    />
                 </p>
 
                 <div className="border-t border-gray-300 mt-4 pt-4">
@@ -84,14 +157,27 @@ function Problem() {
                 <div className="border-t border-gray-300 mt-4 pt-4">
                     <h2 className="text-xl font-semibold">📥 Input Format</h2>
                     <pre className="bg-gray-100 p-3 rounded-md text-sm whitespace-pre-wrap">
-                        {problemDetails?.input}
+                        {problemDetails?.input_format}
                     </pre>
                 </div>
 
                 <div className="border-t border-gray-300 mt-4 pt-4">
                     <h2 className="text-xl font-semibold">📤 Output Format</h2>
                     <pre className="bg-gray-100 p-3 rounded-md text-sm whitespace-pre-wrap">
-                        {problemDetails?.output}
+                        {problemDetails?.output_format}
+                    </pre>
+                </div>
+                <div className="border-t border-gray-300 mt-4 pt-4">
+                    <h2 className="text-xl font-semibold">📥 Sample Input</h2>
+                    <pre className="bg-gray-100 p-3 rounded-md text-sm whitespace-pre-wrap">
+                        {problemDetails?.sample_input}
+                    </pre>
+                </div>
+
+                <div className="border-t border-gray-300 mt-4 pt-4">
+                    <h2 className="text-xl font-semibold">📤 Sample Output</h2>
+                    <pre className="bg-gray-100 p-3 rounded-md text-sm whitespace-pre-wrap">
+                        {problemDetails?.sample_output}
                     </pre>
                 </div>
 
@@ -111,19 +197,42 @@ function Problem() {
             {/* RIGHT PANEL - CODE EDITOR */}
             <div className="w-1/2 p-6 flex flex-col">
                 <h2 className="text-xl font-semibold mb-3">💻 Code Editor</h2>
+
+                {/* Language Selector */}
+                {languages && (
+                    <select
+                        className="mb-3 p-2 border rounded-md w-1/4"
+                        value={selectedLanguage}
+                        onChange={(e) => setSelectedLanguage(e.target.value)}
+                    >
+                        {languages.map((lang) => (
+                            <option key={lang.lid} value={lang.language}>
+                                {lang.language.toUpperCase()}
+                            </option>
+                        ))}
+                    </select>
+                )}
+
+                {/* Code Editor */}
                 <div className="border rounded-lg flex-grow">
                     <Editor
                         height="75vh"
-                        defaultLanguage="javascript"
+                        language={languageMap[selectedLanguage]}
                         theme="vs-dark"
-                        value={code} // <-- Use the state here
-                        onChange={(newValue) => setCode(newValue || "")} // <-- Update state on change
+                        value={code}
+                        onChange={(newValue) => setCode(newValue || "")}
                     />
                 </div>
 
-                {/* Run Button */}
-                <button className="mt-4 px-4 py-2 bg-blue-600 text-white rounded-lg hover:bg-blue-700">
-                    ▶️ Run Code
+                {/* Submit Button */}
+                <button
+                    onClick={() => {
+                        submiteTheCode(code, selectedLanguage);
+                    }}
+                    className="mt-4 justify-center bg-blue-500 text-white px-4 py-2 rounded-lg flex items-center gap-2 hover:bg-blue-700"
+                >
+                    <FaPaperPlane />
+                    Submit
                 </button>
             </div>
         </div>
