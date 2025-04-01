@@ -85,6 +85,7 @@ function Contests() {
                 <p className="mt-2 text-sm text-gray-500">
                     Authors:{" "}
                     {contest.authors
+                        // eslint-disable-next-line @typescript-eslint/no-explicit-any
                         .map((author: any) => author.username)
                         .join(", ")}
                 </p>
@@ -145,11 +146,17 @@ function Contests() {
             <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4">
                 {contests && contests.length > 0 ? (
                     contests.map((contest) => (
-                        <ContestCard
+                        <Link
                             key={contest.cid}
-                            contest={contest}
-                            showTimer={false}
-                        />
+                            to={`/contests/${contest.cid}`}
+                            className="block cursor-pointer"
+                        >
+                            <ContestCard
+                                key={contest.cid}
+                                contest={contest}
+                                showTimer={false}
+                            />
+                        </Link>
                     ))
                 ) : (
                     <p>No recent contests</p>
@@ -170,6 +177,7 @@ function Contests() {
         } catch (error: unknown) {
             console.log(error);
             if (error instanceof AxiosError) {
+                // eslint-disable-next-line no-unsafe-optional-chaining
                 const { message } = error.response?.data;
                 return {
                     message,

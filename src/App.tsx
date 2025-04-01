@@ -9,7 +9,9 @@ import Contests from "./pages/Contests";
 import ContestDetail from "./pages/ContestDetail";
 import Problem from "./pages/Problem";
 import Gym from "./pages/Gym";
-import MySubmission from "./pages/MySubmission";
+import MySubmissions from "./pages/MySubmissions";
+import GymSubmissions from "./pages/GymSubmissions";
+import Submission from "./pages/Submission";
 
 function App() {
     return (
@@ -33,21 +35,25 @@ function App() {
                                     element={<ContestDetail />}
                                 />
                                 <Route
-                                    path="/contests/:contestId/:problemId"
-                                    element={<Problem />}
+                                    path="/contests/:contestId/submissions"
+                                    element={<MySubmissions />}
                                 />
-                                <Route path="/gym" element={<Gym />} />
                                 <Route
                                     path="/problems/:problemId"
                                     element={<Problem />}
                                 />
                                 <Route
-                                    path="/constests/:contestId/:problemId"
+                                    path="/contests/:contestId/:problemId"
                                     element={<Problem />}
                                 />
+                                <Route path="/gym" element={<Gym />} />
                                 <Route
-                                    path="/contest/:contestId/submissions"
-                                    element={<MySubmission />}
+                                    path="/gym/submissions"
+                                    element={<GymSubmissions />}
+                                />
+                                <Route
+                                    path="/submission/:submissionId"
+                                    element={<Submission />}
                                 />
                             </Routes>
                         </div>

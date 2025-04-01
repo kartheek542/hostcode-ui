@@ -6,6 +6,8 @@ import Editor from "@monaco-editor/react"; // Monaco Editor (used by VS Code)
 import { MathJaxFormat } from "../components/custom_components/MathJaxFormat";
 import { FaPaperPlane } from "react-icons/fa";
 import Cookies from "js-cookie";
+import { useSelector } from "react-redux";
+import { getUserLoginStatus } from "../state/selectors";
 
 interface IProblemDetails {
     pid: number;
@@ -49,6 +51,8 @@ function Problem() {
         return lang ? lang.lid : -1; // Return the ID if found, else null
     };
 
+    const isLoggedIn = useSelector(getUserLoginStatus);
+
     console.log("selectedLanguage", selectedLanguage);
 
     const submiteTheCode = async (code: string, selectedLanguage: string) => {
@@ -69,7 +73,7 @@ function Problem() {
             const response = await apiClient.post(
                 "/problems/submit",
                 requestBody,
-                config
+                config,
             );
             if (response.status == 200) {
                 navigate(`/contest/${contestId}/submissions`);
@@ -79,7 +83,7 @@ function Problem() {
             setLoading(false);
             if (error instanceof AxiosError) {
                 setError(
-                    error.response?.data.message || "Error fetching problem"
+                    error.response?.data.message || "Error fetching problem",
                 );
             } else {
                 setError("Unknown error, please try again later.");
@@ -117,6 +121,7 @@ function Problem() {
 
     useEffect(() => {
         getProblemDetails();
+    // eslint-disable-next-line react-hooks/exhaustive-deps
     }, []);
 
     if (loading)
@@ -131,6 +136,7 @@ function Problem() {
         );
     // console.log("languages", languages);
 
+
     return (
         <div className="flex h-screen w-full">
             {/* LEFT PANEL - PROBLEM DETAILS */}
@@ -142,7 +148,7 @@ function Problem() {
                     <MathJaxFormat
                         statement={(problemDetails?.description || "").replace(
                             /\\\\/g,
-                            "\\"
+                            "\\",
                         )}
                     />
                 </p>
@@ -226,10 +232,11 @@ function Problem() {
 
                 {/* Submit Button */}
                 <button
+                    disabled={!isLoggedIn}
                     onClick={() => {
                         submiteTheCode(code, selectedLanguage);
                     }}
-                    className="mt-4 justify-center bg-blue-500 text-white px-4 py-2 rounded-lg flex items-center gap-2 hover:bg-blue-700"
+                    className={`mt-4 justify-center bg-blue-500 text-white px-4 py-2 rounded-lg flex items-center gap-2 hover:bg-blue-700 ${isLoggedIn ? "" : "cursor-not-allowed bg-gray-400 hover:bg-gray-500"}`}
                 >
                     <FaPaperPlane />
                     Submit

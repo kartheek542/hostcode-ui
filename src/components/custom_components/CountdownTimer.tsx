@@ -8,7 +8,7 @@ interface CountdownTimerProps {
 
 const CountdownTimer = ({ startTime, endTime, label }: CountdownTimerProps) => {
     const [timeLeft, setTimeLeft] = useState(
-        getRemainingTime(startTime, endTime)
+        getRemainingTime(startTime, endTime),
     );
 
     useEffect(() => {
@@ -36,7 +36,7 @@ const CountdownTimer = ({ startTime, endTime, label }: CountdownTimerProps) => {
     function calculateTimeDiff(diff: number) {
         const days = Math.floor(diff / (1000 * 60 * 60 * 24));
         const hours = Math.floor(
-            (diff % (1000 * 60 * 60 * 24)) / (1000 * 60 * 60)
+            (diff % (1000 * 60 * 60 * 24)) / (1000 * 60 * 60),
         );
         const minutes = Math.floor((diff % (1000 * 60 * 60)) / (1000 * 60));
         const seconds = Math.floor((diff % (1000 * 60)) / 1000);

@@ -34,7 +34,7 @@ function ContestDetail() {
             if (error instanceof AxiosError) {
                 setError(
                     error.response?.data.message ||
-                        "Failed to load contest details."
+                        "Failed to load contest details.",
                 );
             } else {
                 setError("Unknown error occurred.");

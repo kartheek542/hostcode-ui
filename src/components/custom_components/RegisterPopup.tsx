@@ -29,7 +29,7 @@ const RegisterPopup = ({ isOpen, onClose, contestId }: RegisterPopupProps) => {
             const response = await apiClient.post(
                 `/contests/${id}/register`,
                 {},
-                config
+                config,
             );
             console.log(response);
             setMessage(response.data.message);
