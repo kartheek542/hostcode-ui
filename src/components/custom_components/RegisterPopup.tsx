@@ -38,6 +38,7 @@ const RegisterPopup = ({ isOpen, onClose, contestId }: RegisterPopupProps) => {
             console.log(error);
             console.log("in catch block");
             if (error instanceof AxiosError) {
+                // eslint-disable-next-line no-unsafe-optional-chaining
                 const { message } = error.response?.data;
                 return {
                     message,
