@@ -20,7 +20,7 @@ function App() {
                 <div className="flex flex-col min-h-screen">
                     <Header />
 
-                    <div className="flex-grow flex justify-center">
+                    <div className="flex-grow flex justify-center overflow-auto">
                         <div className="max-w-7xl w-full flex flex-col items-center">
                             <Routes>
                                 <Route path="/" element={<Home />} />
